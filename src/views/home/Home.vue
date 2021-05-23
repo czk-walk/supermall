@@ -28,7 +28,7 @@
       <goods-list :goods="showGood" />
     </scroll>
 
-    <back-top @click.native="topClick" v-show="isShowBackTopL"></back-top>
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -41,10 +41,10 @@ import NavBar from "components/common/navbar/NavBar";
 import TabControl from "../../components/content/tabControl/TabControl.vue";
 import GoodsList from "../../components/content/goods/GoodsList.vue";
 import Scroll from "../../components/common/scroll/Scroll.vue";
-import BackTop from "../../components/content/backTop/BackTop.vue";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
 import { debounce } from "common/utils";
+import {itemListenerMixin, backTopMixin} from "common/mixin.js"
 
 export default {
   name: "Home",
@@ -56,8 +56,10 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    BackTop,
   },
+  mixins:[
+    itemListenerMixin,backTopMixin
+  ],
   data() {
     return {
       banners: [],
@@ -69,7 +71,6 @@ export default {
       },
       currentType: "pop",
       click: true,
-      isShowBackTopL: false,
       tabOffsetTop: 0,
       isTabFixed: false,
       saveY: 0
@@ -128,12 +129,9 @@ export default {
       this.$refs.tabControlCopy.currentIndex = index;
       this.$refs.tabControl.currentIndex = index;
     },
-    topClick() {
-      this.$refs.scroll.scrollTo(0, 0, 500);
-    },
     contentScroll(position) {
       //1.判断backtop是否显示
-      this.isShowBackTopL = -position.y > 1000;
+      this.isShowBackTop = -position.y > 1000;
 
       //2.决定tabcontrol是否吸顶(position：fixed)
       this.isTabFixed = -position.y > this.tabOffsetTop;
